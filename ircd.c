@@ -142,8 +142,8 @@ int process_request(char request, int socket) {
 void
 termination_handler (int signum)
 {
-    // Terminate
-    alive = 0;
+	// Terminate
+	alive = 0;
 }
 
 int main(int argc, char *argv[]) {
@@ -175,40 +175,40 @@ int main(int argc, char *argv[]) {
 	
 	// Create listening socket
 	sockd_wait = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockd_wait < 0) {
-        perror("ERROR opening socket");
-        return EXIT_FAILURE;
-    }
-    
-    // Receive from anyone
-    bzero((char *) &server_address, sizeof(server_address));
-    server_address.sin_family = AF_INET;
-    server_address.sin_addr.s_addr = INADDR_ANY;
-    server_address.sin_port = htons(port_no);
-    
-    // Bind the socket
-    if (bind(sockd_wait, (struct sockaddr *) &server_address,
-                sizeof(server_address)) < 0) {
-        perror("ERROR on binding");
-        close(sockd_wait);
-        return EXIT_FAILURE;
-    }
-    
-    if (listen(sockd_wait, 5) < 0) {
+	if (sockd_wait < 0) {
+		perror("ERROR opening socket");
+		return EXIT_FAILURE;
+	}
+	
+	// Receive from anyone
+	bzero((char *) &server_address, sizeof(server_address));
+	server_address.sin_family = AF_INET;
+	server_address.sin_addr.s_addr = INADDR_ANY;
+	server_address.sin_port = htons(port_no);
+	
+	// Bind the socket
+	if (bind(sockd_wait, (struct sockaddr *) &server_address,
+				sizeof(server_address)) < 0) {
+		perror("ERROR on binding");
+		close(sockd_wait);
+		return EXIT_FAILURE;
+	}
+	
+	if (listen(sockd_wait, 5) < 0) {
 		perror("ERROR on listen");
-        close(sockd_wait);
-        return EXIT_FAILURE;
+		close(sockd_wait);
+		return EXIT_FAILURE;
 	}
 	
 	// Wait for new clients (accept)
 	FD_SET(sockd_wait, &waiting_set);
 	
 	if (signal (SIGINT, termination_handler) == SIG_IGN) {
-        // Ctrl+c handler to terminate early
-        signal (SIGINT, SIG_IGN);
-    }
-    
-    while (alive) {
+		// Ctrl+c handler to terminate early
+		signal (SIGINT, SIG_IGN);
+	}
+	
+	while (alive) {
 		selected_set = waiting_set;
 		selected = pselect(INT_MAX, &selected_set, NULL, NULL, NULL, NULL);
 		if (selected < 0) {
@@ -263,6 +263,6 @@ int main(int argc, char *argv[]) {
 	}
 	
 	close(sockd_wait);
-    
-    return EXIT_SUCCESS;
+	
+	return EXIT_SUCCESS;
 }
